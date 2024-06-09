@@ -1,0 +1,10 @@
+scrape_configs:
+  - job_name: "node"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["myserver_node_exporter:9100"]
+        labels:
+          instance: "My Favorite Server Name"
+      # - targets: ["anotherserver_node_exporter:9100"]
+      #   labels:
+      #     instance: "Another Server"
