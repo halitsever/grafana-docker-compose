@@ -1,3 +1,16 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
 scrape_configs:
   - job_name: "node"
     scrape_interval: 5s
@@ -8,3 +21,12 @@ scrape_configs:
       # - targets: ["anotherserver_node_exporter:9100"]
       #   labels:
       #     instance: "Another Server"
+
+  - job_name: "cadvisor"
+    scrape_interval: 10s
+    static_configs:
+      - targets: ["cadvisor:8080"]
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
