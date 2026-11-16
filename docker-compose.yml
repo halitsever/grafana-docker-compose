@@ -33,7 +33,7 @@ services:
       - myserver_node_exporter
 
   myserver_node_exporter:
-    image: prom/node-exporter:v1.8.1
+    image: prom/node-exporter:v1.12.1
     ports:
       - "9100:9100"
     restart: unless-stopped
