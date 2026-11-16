@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compose config
+        run: docker compose config -q
+      - name: Prometheus config and rules
+        run: >
+          docker run --rm
+          -v "$PWD/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+          -v "$PWD/prometheus/rules:/etc/prometheus/rules:ro"
+          --entrypoint promtool prom/prometheus:v2.53.0
+          check config /etc/prometheus/prometheus.yml
+      - name: Alertmanager config
+        run: >
+          docker run --rm
+          -v "$PWD/alertmanager:/cfg:ro"
+          --entrypoint amtool prom/alertmanager:v0.27.0
+          check-config /cfg/alertmanager.yml
