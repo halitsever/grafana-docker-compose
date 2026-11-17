@@ -1,0 +1,19 @@
+# grafana-docker-compose
+
+> A Docker Compose monitoring stack: Grafana with a provisioned Prometheus data source and Node Exporter dashboard, Prometheus with alert rules, Alertmanager, Node Exporter and cAdvisor for server and container metrics.
+
+Run it with `cp .env.example .env && docker compose up -d`, or `docker stack deploy -c docker-compose.yml monitoring-stack` on Docker Swarm. Grafana is on port 1296, Prometheus on 9090, Alertmanager on 9093.
+
+## Docs
+
+- [README](https://github.com/halitsever/grafana-docker-compose/blob/main/Readme.md): features, install commands and service ports
+- [docker-compose.yml](https://github.com/halitsever/grafana-docker-compose/blob/main/docker-compose.yml): services, image versions, ports and volumes
+- [prometheus.yml](https://github.com/halitsever/grafana-docker-compose/blob/main/prometheus.yml): scrape jobs; add more servers under the `node` job
+- [Alert rules](https://github.com/halitsever/grafana-docker-compose/blob/main/prometheus/rules/node.yml): instance down, CPU, memory, disk, network errors and load
+- [alertmanager.yml](https://github.com/halitsever/grafana-docker-compose/blob/main/alertmanager/alertmanager.yml): routing and commented email and Slack receivers
+- [.env.example](https://github.com/halitsever/grafana-docker-compose/blob/main/.env.example): Grafana admin password, root URL and Prometheus retention
+- [Article](https://www.linkedin.com/pulse/using-grafana-system-monitoring-deep-dive-docker-halit-sever-iu6kf): walkthrough of using Grafana for system monitoring with Docker
+
+## Optional
+
+- [Source](https://github.com/halitsever/grafana-docker-compose): repository
