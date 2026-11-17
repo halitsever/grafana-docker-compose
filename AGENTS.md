@@ -9,7 +9,7 @@ CI (`.github/workflows/ci.yml`) runs these on push and PR to `main`. Run them lo
 ```bash
 docker compose config -q
 docker run --rm -v "$PWD/prometheus.yml:/etc/prometheus/prometheus.yml:ro" -v "$PWD/prometheus/rules:/etc/prometheus/rules:ro" --entrypoint promtool prom/prometheus:v2.53.0 check config /etc/prometheus/prometheus.yml
-docker run --rm -v "$PWD/alertmanager:/cfg:ro" --entrypoint amtool prom/alertmanager:v0.27.0 check-config /cfg/alertmanager.yml
+docker run --rm -v "$PWD/alertmanager:/cfg:ro" --entrypoint amtool prom/alertmanager:v0.35.0 check-config /cfg/alertmanager.yml
 ```
 
 - `promtool check config` also checks every file in `prometheus/rules/`, so new rule files need no extra step.
