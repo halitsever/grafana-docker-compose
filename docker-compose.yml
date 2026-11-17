@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   grafana:
-    image: grafana/grafana:11.1.0
+    image: grafana/grafana:13.3.0
     ports:
       - "1296:3000"
     restart: unless-stopped
@@ -16,7 +16,7 @@ services:
       - prometheus
 
   prometheus:
-    image: prom/prometheus:v2.53.0
+    image: prom/prometheus:v3.16.0
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
