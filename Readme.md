@@ -51,7 +51,7 @@ docker compose up -d
 
 Add more servers under the `node` job in `prometheus.yml`, and alert receivers in `alertmanager/alertmanager.yml`.
 
-<a align="center" href="https://github.com/halitsever/repo_name/issues">
+<a align="center" href="https://github.com/halitsever/grafana-docker-compose/issues">
 <img src="https://halitsever-api.vercel.app/api/issue"/>
 </a>
 
