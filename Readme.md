@@ -4,7 +4,8 @@
 <img src="https://halitsever-api.vercel.app/api/repo-title?title=Grafana%20Docker%20Compose">
 
 <p align="center">
-📚 Docker Compose monitoring stack with Grafana, Prometheus, Alertmanager, Node Exporter and cAdvisor, shipped with a provisioned dashboard and alert rules.<br>
+📚 Grafana Docker Compose stack with Prometheus, Alertmanager, Node Exporter and cAdvisor for monitoring your servers and containers.<br>
+It ships with a provisioned Grafana dashboard and Prometheus alert rules.<br>
 <br/>
 <br/>
 <img src="https://img.shields.io/github/sponsors/halitsever" alt="GitHub Sponsors"/>
@@ -34,7 +35,9 @@
 docker stack deploy -c docker-compose.yml monitoring-stack
 ```
 
-Or run it with Docker Compose, after copying `.env.example` to `.env` and setting the Grafana admin password:
+### Prometheus and Grafana with Docker Compose
+
+To run it with plain Docker Compose, copy `.env.example` to `.env`, set the Grafana admin password and start the stack:
 
 ```bash
 cp .env.example .env
@@ -50,6 +53,10 @@ docker compose up -d
 | cAdvisor      | 8080 |
 
 Add more servers under the `node` job in `prometheus.yml`, and alert receivers in `alertmanager/alertmanager.yml`.
+
+### cAdvisor in Docker Compose
+
+cAdvisor runs as the `cadvisor` service with `privileged: true` and read-only mounts of the host filesystem and Docker's data directory. Prometheus scrapes it every 10 seconds. `docker stack deploy` ignores `privileged`, so if container metrics are missing, start the stack with `docker compose up -d` instead.
 
 <a align="center" href="https://github.com/halitsever/grafana-docker-compose/issues">
 <img src="https://halitsever-api.vercel.app/api/issue"/>

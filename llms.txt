@@ -1,6 +1,6 @@
 # grafana-docker-compose
 
-> A Docker Compose monitoring stack: Grafana with a provisioned Prometheus data source and Node Exporter dashboard, Prometheus with alert rules, Alertmanager, Node Exporter and cAdvisor for server and container metrics.
+> A Grafana Docker Compose monitoring stack: Grafana with a provisioned Prometheus data source and Node Exporter dashboard, Prometheus with alert rules, Alertmanager, Node Exporter and cAdvisor for server and container metrics.
 
 Run it with `cp .env.example .env && docker compose up -d`, or `docker stack deploy -c docker-compose.yml monitoring-stack` on Docker Swarm. Grafana is on port 1296, Prometheus on 9090, Alertmanager on 9093.
 
