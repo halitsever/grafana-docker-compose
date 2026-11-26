@@ -4,7 +4,7 @@
 <img src="https://halitsever-api.vercel.app/api/repo-title?title=Grafana%20Docker%20Compose">
 
 <p align="center">
-📚 Grafana Docker Compose stack with Prometheus, Alertmanager, Node Exporter and cAdvisor for monitoring your servers and containers.<br>
+Grafana Docker Compose stack with Prometheus, Alertmanager, Node Exporter and cAdvisor for monitoring your servers and containers.<br>
 It ships with a provisioned Grafana dashboard and Prometheus alert rules.<br>
 <br/>
 <br/>
@@ -19,7 +19,7 @@ It ships with a provisioned Grafana dashboard and Prometheus alert rules.<br>
 <img src="https://halitsever-api.vercel.app/api/details"/>
 </a>
 
-- 🖐🏿 [**Please check the article**](https://www.linkedin.com/pulse/using-grafana-system-monitoring-deep-dive-docker-halit-sever-iu6kf)
+- [**Please check the article**](https://www.linkedin.com/pulse/using-grafana-system-monitoring-deep-dive-docker-halit-sever-iu6kf)
 - **Grafana** with Prometheus provisioned as the default data source and a Node Exporter dashboard (CPU, memory, disk)
 - **Prometheus** scraping Node Exporter, cAdvisor and itself, with configurable retention (30 days by default)
 - **Alert rules** for instance down, CPU, memory, disk space, network errors and system load
