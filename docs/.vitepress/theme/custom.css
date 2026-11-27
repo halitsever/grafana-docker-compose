@@ -285,6 +285,13 @@
 }
 .wall .cmd-box .cmd code {
   color: #f4f2ee;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+/* Hanging indent keeps a wrapped command clear of the prompt sign. */
+.wall .cmd-box .cmd-line {
+  padding-left: 2ch;
+  text-indent: -2ch;
 }
 .wall .actions {
   display: flex;
