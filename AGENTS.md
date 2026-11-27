@@ -26,6 +26,17 @@ docker run --rm -v "$PWD/alertmanager:/cfg:ro" --entrypoint amtool prom/alertman
 - Prometheus runs with `--web.enable-lifecycle`, so `curl -X POST localhost:9090/-/reload` applies config changes without a restart.
 - The node scrape target carries the placeholder label `instance: "My Favorite Server Name"`. Alert summaries show it.
 
+## Docs site
+
+The VitePress site in `docs/` deploys to https://halitsever.github.io/grafana-docker-compose/ through `.github/workflows/docs.yml`. Build it with:
+
+```bash
+cd docs && npm ci && npm run build
+```
+
+- The site quotes image tags, ports, scrape intervals, alert rules and dashboard panels. When one changes in the config, update `docs/guide/*.md` and the data arrays in `docs/.vitepress/theme/*.vue` in the same PR.
+- Dark theme only. The landing page is `docs/.vitepress/theme/Landing.vue`.
+
 ## Conventions
 
 - Commit subjects in conventional-commit style, English, subject line only, no body or trailer.
