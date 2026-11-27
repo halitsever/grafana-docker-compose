@@ -19,7 +19,7 @@ It ships with a provisioned Grafana dashboard and Prometheus alert rules.<br>
 <img src="https://halitsever-api.vercel.app/api/details"/>
 </a>
 
-- [**Project website**](https://halitsever.github.io/grafana-docker-compose/) with guides and a configuration reference
+- [**Project website**](https://projects.halit.org/grafana-docker-compose/) with guides and a configuration reference
 - [**Please check the article**](https://www.linkedin.com/pulse/using-grafana-system-monitoring-deep-dive-docker-halit-sever-iu6kf)
 - **Grafana** with Prometheus provisioned as the default data source and a Node Exporter dashboard (CPU, memory, disk)
 - **Prometheus** scraping Node Exporter, cAdvisor and itself, with configurable retention (30 days by default)
