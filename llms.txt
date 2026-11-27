@@ -6,6 +6,7 @@ Run it with `cp .env.example .env && docker compose up -d`, or `docker stack dep
 
 ## Docs
 
+- [Project website](https://halitsever.github.io/grafana-docker-compose/): quick start, Node Exporter, cAdvisor, alerting and Docker Swarm guides, configuration reference
 - [README](https://github.com/halitsever/grafana-docker-compose/blob/main/Readme.md): features, install commands and service ports
 - [docker-compose.yml](https://github.com/halitsever/grafana-docker-compose/blob/main/docker-compose.yml): services, image versions, ports and volumes
 - [prometheus.yml](https://github.com/halitsever/grafana-docker-compose/blob/main/prometheus.yml): scrape jobs; add more servers under the `node` job

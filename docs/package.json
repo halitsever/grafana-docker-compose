@@ -1,0 +1,20 @@
+{
+  "name": "grafana-docker-compose-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "@fontsource-variable/schibsted-grotesk": "5.3.0",
+    "@fontsource-variable/spline-sans-mono": "5.3.0",
+    "vitepress": "1.6.4"
+  },
+  "overrides": {
+    "vitepress": {
+      "vite": "^6.4.6"
+    }
+  }
+}
