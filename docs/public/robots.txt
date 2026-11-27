@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://halitsever.github.io/grafana-docker-compose/sitemap.xml
+Sitemap: https://projects.halit.org/grafana-docker-compose/sitemap.xml

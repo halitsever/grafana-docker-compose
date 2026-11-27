@@ -28,7 +28,7 @@ docker run --rm -v "$PWD/alertmanager:/cfg:ro" --entrypoint amtool prom/alertman
 
 ## Docs site
 
-The VitePress site in `docs/` deploys to https://halitsever.github.io/grafana-docker-compose/ through `.github/workflows/docs.yml`. Build it with:
+The VitePress site in `docs/` deploys to https://projects.halit.org/grafana-docker-compose/ through `.github/workflows/docs.yml`. Build it with:
 
 ```bash
 cd docs && npm ci && npm run build
