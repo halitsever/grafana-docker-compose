@@ -118,6 +118,7 @@ High availability (an Alertmanager cluster) matters when an outage of the monito
 - [How Prometheus Alertmanager routes, groups and mutes alerts](/blog/prometheus-alertmanager-explained)
 - [Using $labels and $value in Prometheus alert annotations](/blog/prometheus-alert-rule-templates)
 - [Silencing an alert in Alertmanager from the UI or amtool](/blog/alertmanager-silence)
+- [Catching broken Prometheus rules before they ship with promtool](/blog/promtool)
 - [All posts](/blog/)
 
 :::

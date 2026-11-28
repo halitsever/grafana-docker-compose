@@ -133,6 +133,7 @@ Yes. Label values are templated the same way as annotations, but a label that ch
 - [How Prometheus Alertmanager routes, groups and mutes alerts](/blog/prometheus-alertmanager-explained)
 - [Alertmanager settings that keep a small server quiet](/blog/alertmanager-best-practices)
 - [The cAdvisor container metrics worth a Grafana panel](/blog/cadvisor-metrics)
+- [Catching broken Prometheus rules before they ship with promtool](/blog/promtool)
 - [All posts](/blog/)
 
 :::

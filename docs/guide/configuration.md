@@ -3,7 +3,7 @@ title: Configuration reference
 description: Every environment variable, file, port, volume and image tag in the Grafana Docker Compose stack, with defaults and how to apply a change.
 ---
 
-# Configuration reference
+# Stack configuration: files, ports, variables and image tags
 
 Everything the stack does is defined by a few files in the repository. This page lists each one with its defaults.
 

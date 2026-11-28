@@ -83,6 +83,7 @@ Keep the eight shipped rules in Prometheus, add a receiver so they actually reac
 - [How Prometheus Alertmanager routes, groups and mutes alerts](/blog/prometheus-alertmanager-explained)
 - [Using $labels and $value in Prometheus alert annotations](/blog/prometheus-alert-rule-templates)
 - [Moving Grafana dashboards around as JSON](/blog/grafana-export-import-dashboard)
+- [Writing if-then logic in PromQL with filters and bool](/blog/promql-if-function)
 - [All posts](/blog/)
 
 :::

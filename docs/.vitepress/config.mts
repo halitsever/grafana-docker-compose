@@ -19,6 +19,12 @@ const posts = [
   ['grafana-export-import-dashboard', 'Export and import a dashboard'],
   ['cadvisor-image-gcr-vs-docker-hub', 'cAdvisor image registries'],
   ['cadvisor-metrics', 'cAdvisor metrics to graph'],
+  ['promql-cheat-sheet', 'PromQL cheat sheet'],
+  ['promql-if-function', 'Conditions in PromQL'],
+  ['promql-rate', 'rate, irate and increase'],
+  ['promql-group-by', 'Group by in PromQL'],
+  ['promql-label-replace', 'label_replace'],
+  ['promtool', 'promtool checks and tests'],
 ]
 
 /** BlogPosting, breadcrumbs and, when the post shows an FAQ, FAQPage data for a blog post. */

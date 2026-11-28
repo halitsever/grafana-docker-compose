@@ -158,6 +158,7 @@ cAdvisor reports every cgroup, including system slices that are not containers. 
 - [Using $labels and $value in Prometheus alert annotations](/blog/prometheus-alert-rule-templates)
 - [Moving Grafana dashboards around as JSON](/blog/grafana-export-import-dashboard)
 - [Which registry to pull the cAdvisor image from](/blog/cadvisor-image-gcr-vs-docker-hub)
+- [Counting per second in PromQL: rate, irate and increase](/blog/promql-rate)
 - [All posts](/blog/)
 
 :::
