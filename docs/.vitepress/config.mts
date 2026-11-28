@@ -8,6 +8,57 @@ const description =
 
 const repo = 'https://github.com/halitsever/grafana-docker-compose'
 
+const posts = [
+  ['prometheus-alertmanager-explained', 'Alertmanager explained'],
+  ['prometheus-alert-rule-templates', 'Alert rule templates'],
+  ['alertmanager-silence', 'Silence an alert'],
+  ['grafana-alerts-vs-prometheus-rules', 'Grafana alerts vs Prometheus rules'],
+  ['alertmanager-best-practices', 'Alertmanager best practices'],
+  ['grafana-export-import-dashboard', 'Export and import a dashboard'],
+  ['cadvisor-image-gcr-vs-docker-hub', 'cAdvisor image registries'],
+  ['cadvisor-metrics', 'cAdvisor metrics to graph'],
+]
+
+/** BlogPosting, breadcrumbs and, when the post shows an FAQ, FAQPage data for a blog post. */
+function postJsonLd(fm: Record<string, any>, url: string) {
+  const person = { '@type': 'Person', name: 'Halit Sever', url: 'https://halit.org' }
+  const graph: object[] = [
+    {
+      '@type': 'BlogPosting',
+      headline: fm.headline ?? fm.title,
+      description: fm.description,
+      url,
+      mainEntityOfPage: url,
+      datePublished: fm.date,
+      dateModified: fm.date,
+      inLanguage: 'en',
+      image: `${site}og.png`,
+      keywords: fm.keyword,
+      author: person,
+      publisher: person,
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Grafana Docker Compose', item: site },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site}blog/` },
+        { '@type': 'ListItem', position: 3, name: fm.headline ?? fm.title, item: url },
+      ],
+    },
+  ]
+  if (fm.faq?.length) {
+    graph.push({
+      '@type': 'FAQPage',
+      mainEntity: fm.faq.map((f: { q: string; a: string }) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    })
+  }
+  return { '@context': 'https://schema.org', '@graph': graph }
+}
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareSourceCode',
@@ -42,7 +93,6 @@ export default defineConfig({
     ['link', { rel: 'icon', href: '/grafana-docker-compose/favicon.png', sizes: '32x32', type: 'image/png' }],
     ['link', { rel: 'icon', href: '/grafana-docker-compose/favicon.svg', type: 'image/svg+xml' }],
     ['meta', { name: 'theme-color', content: '#101216' }],
-    ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: name }],
     ['meta', { property: 'og:image', content: `${site}og.png` }],
     ['meta', { property: 'og:image:width', content: '1280' }],
@@ -53,16 +103,19 @@ export default defineConfig({
   ],
 
   transformPageData(pageData) {
+    const fm = pageData.frontmatter
     const isHome = pageData.relativePath === 'index.md'
-    const title = pageData.frontmatter.title ?? pageData.title
+    const title = fm.title ?? pageData.title
     const url = site + pageData.relativePath.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '')
-    pageData.frontmatter.head ??= []
-    pageData.frontmatter.head.push(
+    fm.head ??= []
+    fm.head.push(
       ['link', { rel: 'canonical', href: url }],
       ['meta', { property: 'og:url', content: url }],
-      ['meta', { property: 'og:title', content: isHome ? homeTitle : `${title} | Grafana Docker stack` }],
-      ['meta', { property: 'og:description', content: pageData.frontmatter.description ?? description }],
+      ['meta', { property: 'og:type', content: fm.date ? 'article' : 'website' }],
+      ['meta', { property: 'og:title', content: isHome ? homeTitle : fm.titleTemplate === false ? title : `${title} | Grafana Docker stack` }],
+      ['meta', { property: 'og:description', content: fm.description ?? description }],
     )
+    if (fm.date) fm.head.push(['script', { type: 'application/ld+json' }, JSON.stringify(postJsonLd(fm, url))])
   },
 
   markdown: {
@@ -75,29 +128,42 @@ export default defineConfig({
     nav: [
       { text: 'Quick start', link: '/guide/quick-start' },
       { text: 'Alerting', link: '/guide/alerting' },
-      { text: 'Configuration', link: '/guide/configuration' },
+      { text: 'Dashboard', link: '/node-exporter-dashboard/' },
+      { text: 'Blog', link: '/blog/', activeMatch: '/blog/' },
     ],
-    sidebar: [
-      {
-        text: 'Run it',
-        items: [
-          { text: 'Quick start', link: '/guide/quick-start' },
-          { text: 'Docker Swarm deploy', link: '/guide/docker-swarm' },
-        ],
-      },
-      {
-        text: 'What it collects',
-        items: [
-          { text: 'Node Exporter and dashboard', link: '/guide/node-exporter' },
-          { text: 'cAdvisor container metrics', link: '/guide/cadvisor' },
-          { text: 'Alert rules and Alertmanager', link: '/guide/alerting' },
-        ],
-      },
-      {
-        text: 'Reference',
-        items: [{ text: 'Configuration', link: '/guide/configuration' }],
-      },
-    ],
+    sidebar: {
+      '/blog/': [
+        {
+          text: 'Monitoring guides',
+          items: [{ text: 'All posts', link: '/blog/' }, ...posts.map(([slug, text]) => ({ text, link: `/blog/${slug}` }))],
+        },
+      ],
+      '/': [
+        {
+          text: 'Run it',
+          items: [
+            { text: 'Quick start', link: '/guide/quick-start' },
+            { text: 'Docker Swarm deploy', link: '/guide/docker-swarm' },
+          ],
+        },
+        {
+          text: 'What it collects',
+          items: [
+            { text: 'Node Exporter and dashboard', link: '/guide/node-exporter' },
+            { text: 'cAdvisor container metrics', link: '/guide/cadvisor' },
+            { text: 'Alert rules and Alertmanager', link: '/guide/alerting' },
+          ],
+        },
+        {
+          text: 'Reference',
+          items: [
+            { text: 'Configuration', link: '/guide/configuration' },
+            { text: 'Node Exporter dashboard', link: '/node-exporter-dashboard/' },
+            { text: 'Blog', link: '/blog/' },
+          ],
+        },
+      ],
+    },
     socialLinks: [{ icon: 'github', link: repo }],
     outline: { level: [2, 3] },
     search: { provider: 'local' },

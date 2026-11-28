@@ -585,3 +585,19 @@
     grid-column: 2;
   }
 }
+
+/* Blog posts and the dashboard page */
+.vp-doc .post-meta {
+  margin: 8px 0 20px;
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+}
+.vp-doc .lead {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--vp-c-text-1);
+}
+.vp-doc img {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+}

@@ -61,6 +61,8 @@ const guides = [
   { link: '/guide/alerting', title: 'Alert rules and Alertmanager', text: 'Every rule, the routing tree, adding a receiver.' },
   { link: '/guide/docker-swarm', title: 'Docker Swarm deploy', text: 'What docker stack deploy ignores in this file.' },
   { link: '/guide/configuration', title: 'Configuration reference', text: 'Every variable, file, volume and port.' },
+  { link: '/node-exporter-dashboard/', title: 'The Node Exporter dashboard', text: 'Screenshot, panel list and how to import the JSON.' },
+  { link: '/blog/', title: 'Blog', text: 'Alertmanager, alert templates, silences and cAdvisor metrics.' },
 ]
 </script>
 
