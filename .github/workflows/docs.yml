@@ -6,10 +6,12 @@ on:
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yml'
+      - 'llms.txt'
   pull_request:
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yml'
+      - 'llms.txt'
   workflow_dispatch:
 
 permissions:
