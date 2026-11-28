@@ -13,7 +13,7 @@ keyword: "prometheus alertmanager best practices"
 
 <p class="post-meta">By <a href="https://halit.org">Halit Sever</a> · <time datetime="2026-11-28">28 November 2026</time></p>
 
-<p class="lead">Most Alertmanager advice is written for teams with on-call rotations and hundreds of services. A side project or a small company server has different problems: one person reads every alert, often on a phone. These are the settings in this stack and the reasons behind them, plus the fixes the shipped file still needs.</p>
+<p class="lead">Most Alertmanager advice is written for teams with on-call rotations and hundreds of services. A side project or a small company server has different problems: one person reads every alert, often on a phone. These are the settings in this stack and the reasons behind them, and the parts you fill in yourself.</p>
 
 ## 1. Make sure something is delivered
 
@@ -28,7 +28,7 @@ receivers:
         send_resolved: true
 ```
 
-The commented example in the repository's `alertmanager.yml` uses `webhook_configs` with a Slack URL, which sends Alertmanager's own JSON format, not a Slack message. Do not uncomment it as is. [How to get a Slack webhook URL](https://projects.halit.org/supadomain/blog/slack-webhook-url) covers the URL itself.
+The repository's `alertmanager.yml` carries this block commented out. Older copies used `webhook_configs` with a Slack URL instead, which sends Alertmanager's own JSON format, not a Slack message, so replace that one if you have it. [How to get a Slack webhook URL](https://projects.halit.org/supadomain/blog/slack-webhook-url) covers the URL itself.
 
 Then test the path end to end: stop a service on purpose (`docker compose stop cadvisor`), wait for `InstanceDown`, and check that the message arrives.
 
@@ -65,16 +65,28 @@ routes:
     repeat_interval: 1h
 ```
 
-Point `critical` at a channel that wakes you up (a phone notification, an SMS gateway, a pager) and `default` at email or a quiet chat channel. Three of the eight shipped rules are critical: `InstanceDown`, `CriticalMemoryUsage` and `DiskSpaceCritical`. The [configuration reference](https://prometheus.io/docs/alerting/latest/configuration/) marks `match:` as deprecated, so the block above uses `matchers:`. The shipped file still uses `match:`, which works in v0.35.0.
+Point `critical` at a channel that wakes you up (a phone notification, an SMS gateway, a pager) and `default` at email or a quiet chat channel. Three of the eight shipped rules are critical: `InstanceDown`, `CriticalMemoryUsage` and `DiskSpaceCritical`. The [configuration reference](https://prometheus.io/docs/alerting/latest/configuration/) marks `match:` as deprecated, so the shipped file uses `matchers:`. An older copy with `match:` still loads in v0.35.0.
 
 ## 5. Let critical mute warning, correctly
 
-When memory is above 95%, it is also above 90%, so `CriticalMemoryUsage` and `HighMemoryUsage` fire together. An inhibit rule can drop the warning. The one in the shipped file requires equal `alertname`, and the pairs have different names, so it never matches. Two ways to fix it:
+When memory is above 95%, it is also above 90%, so `CriticalMemoryUsage` and `HighMemoryUsage` fire together. An inhibit rule can drop the warning. Earlier versions of the shipped file required equal `alertname`, and the pairs have different names, so it never matched. There are two ways to pair them:
 
 - Rename each pair to one alert name with two severities (for example both `MemoryUsage`), and keep `equal: ['alertname', 'instance']`.
-- Keep the names, add a shared label such as `resource: memory` to both rules, and use `equal: ['resource', 'instance']`.
+- Keep the names, add a shared label such as `resource: memory` to both rules, and match on it.
 
-The second keeps the rule names readable in the UI. Either way, check it with `amtool check-config` and by triggering both alerts once.
+The stack does the second, which keeps the rule names readable in the UI:
+
+```yaml
+inhibit_rules:
+  - source_matchers:
+      - severity="critical"
+      - resource=~".+"
+    target_matchers:
+      - severity="warning"
+    equal: ['instance', 'resource', 'mountpoint']
+```
+
+`mountpoint` keeps a full `/data` from muting the warning for `/`. If you change the rule, check it with `amtool check-config` and by triggering both alerts once.
 
 ## 6. Write messages for a phone screen
 

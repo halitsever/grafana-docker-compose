@@ -20,6 +20,12 @@ jobs:
           -v "$PWD/prometheus/rules:/etc/prometheus/rules:ro"
           --entrypoint promtool prom/prometheus:v3.16.0
           check config /etc/prometheus/prometheus.yml
+      - name: Prometheus rule unit tests
+        run: >
+          docker run --rm
+          -v "$PWD/prometheus:/p:ro"
+          --entrypoint promtool prom/prometheus:v3.16.0
+          test rules /p/tests/node_test.yml
       - name: Alertmanager config
         run: >
           docker run --rm

@@ -29,18 +29,18 @@ const services = [
   { name: 'Prometheus', service: 'prometheus', image: 'prom/prometheus:v3.16.0', port: '9090', job: 'Scrapes, stores, evaluates rules' },
   { name: 'Alertmanager', service: 'alertmanager', image: 'prom/alertmanager:v0.35.0', port: '9093', job: 'Groups and routes alerts' },
   { name: 'Node Exporter', service: 'myserver_node_exporter', image: 'prom/node-exporter:v1.12.1', port: '9100', job: 'Host CPU, memory, disk, network' },
-  { name: 'cAdvisor', service: 'cadvisor', image: 'gcr.io/cadvisor/cadvisor:v0.55.1', port: '8080', job: 'Per-container metrics' },
+  { name: 'cAdvisor', service: 'cadvisor', image: 'ghcr.io/google/cadvisor:v0.61.1', port: '8080', job: 'Per-container metrics' },
 ]
 
 /** Mirrors prometheus/rules/node.yml. */
 const alerts = [
   { name: 'InstanceDown', when: 'A scrape target stops answering', expr: 'up == 0', hold: '1m', severity: 'critical' },
-  { name: 'HighCpuUsage', when: 'CPU above 90%', expr: '100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90', hold: '5m', severity: 'warning' },
+  { name: 'HighCpuUsage', when: 'CPU above 90%', expr: '100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90', hold: '5m', severity: 'warning' },
   { name: 'HighMemoryUsage', when: 'Memory above 90%', expr: '100 - ((node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100) > 90', hold: '5m', severity: 'warning' },
   { name: 'CriticalMemoryUsage', when: 'Memory above 95%', expr: '100 - ((node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100) > 95', hold: '2m', severity: 'critical' },
   { name: 'DiskSpaceLow', when: 'Root filesystem above 85%', expr: '100 - ((node_filesystem_avail_bytes{mountpoint="/",fstype!="tmpfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!="tmpfs"}) * 100) > 85', hold: '5m', severity: 'warning' },
   { name: 'DiskSpaceCritical', when: 'Root filesystem above 95%', expr: '100 - ((node_filesystem_avail_bytes{mountpoint="/",fstype!="tmpfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!="tmpfs"}) * 100) > 95', hold: '2m', severity: 'critical' },
-  { name: 'HighNetworkErrors', when: 'More than 10 network errors per second', expr: 'irate(node_network_receive_errs_total[5m]) + irate(node_network_transmit_errs_total[5m]) > 10', hold: '5m', severity: 'warning' },
+  { name: 'HighNetworkErrors', when: 'More than 10 network errors per second', expr: 'rate(node_network_receive_errs_total[5m]) + rate(node_network_transmit_errs_total[5m]) > 10', hold: '5m', severity: 'warning' },
   { name: 'SystemLoad', when: '15-minute load above 2x the CPU count', expr: 'node_load15 / count(node_cpu_seconds_total{mode="idle"}) without (cpu, mode) > 2', hold: '5m', severity: 'warning' },
 ]
 

@@ -116,7 +116,14 @@ Change the second check to `eval_time: 1m` and the test fails, because the alert
 
 `got:[]` with a non-empty `exp` almost always means a `for` duration or an `eval_time` that does not line up. The annotations are compared after templating, so the test also catches a broken `$labels` reference. The [template post](/blog/prometheus-alert-rule-templates) explains those.
 
-The repository does not ship unit tests today; the file above is a starting point you can add next to `node.yml` and run with one more CI step.
+The repository ships tests like this one in [prometheus/tests/node_test.yml](https://github.com/halitsever/grafana-docker-compose/blob/main/prometheus/tests/node_test.yml), and CI runs them with one more step:
+
+```bash
+docker run --rm -v "$PWD/prometheus:/p:ro" --entrypoint promtool prom/prometheus:v3.16.0 \
+  test rules /p/tests/node_test.yml
+```
+
+The file keeps the tests out of `prometheus/rules/`, because Prometheus loads every `.yml` file there as a rule file.
 
 ## Other subcommands
 

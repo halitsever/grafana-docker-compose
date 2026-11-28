@@ -1,7 +1,7 @@
 ---
 title: "Prometheus Alertmanager Explained: Routes and Receivers"
 titleTemplate: false
-description: "Alertmanager explained with a real config: the routing tree, grouping, receivers, inhibition and silences, and the parts of the file that need fixing first."
+description: "Alertmanager explained with a real config: the routing tree, grouping, receivers, inhibition and silences, and the parts of the file you fill in yourself."
 headline: "How Prometheus Alertmanager routes, groups and mutes alerts"
 date: "2026-11-28"
 keyword: "alertmanager"
@@ -14,7 +14,7 @@ faq: [{"q": "What is Alertmanager used for?", "a": "Alertmanager receives alerts
 
 <p class="post-meta">By <a href="https://halit.org">Halit Sever</a> · <time datetime="2026-11-28">28 November 2026</time></p>
 
-<p class="lead">Prometheus decides when something is wrong. Alertmanager decides who hears about it, how often and in how many messages. This post walks through the pieces of an Alertmanager config using the file this stack ships, including two places where that file does not do what it looks like it does.</p>
+<p class="lead">Prometheus decides when something is wrong. Alertmanager decides who hears about it, how often and in how many messages. This post walks through the pieces of an Alertmanager config using the file this stack ships, including two places where earlier versions of that file did not do what they looked like they did.</p>
 
 ## Where Alertmanager sits
 
@@ -43,8 +43,8 @@ route:
   receiver: 'default'
 
   routes:
-    - match:
-        severity: critical
+    - matchers:
+        - severity="critical"
       receiver: 'critical'
       repeat_interval: 1h
 ```
@@ -66,17 +66,7 @@ docker compose exec alertmanager amtool --alertmanager.url=http://localhost:9093
 
 By default a child that matches stops the walk. Set `continue: true` on a child when an alert should also be checked against the siblings that follow it, for example to send critical alerts to a pager and to a chat channel.
 
-One more detail: the [configuration reference](https://prometheus.io/docs/alerting/latest/configuration/) marks `match` and `match_re` as deprecated in favour of `matchers`. The same child in the current syntax reads:
-
-```yaml
-  routes:
-    - matchers:
-        - severity="critical"
-      receiver: 'critical'
-      repeat_interval: 1h
-```
-
-Both forms load in v0.35.0, the version this stack pins.
+The child uses `matchers`, a list of PromQL-style label matchers. The [configuration reference](https://prometheus.io/docs/alerting/latest/configuration/) marks the older `match` and `match_re` maps as deprecated, along with `source_match` and `target_match` in inhibit rules. Both forms still load in v0.35.0, the version this stack pins, so older copies of this file keep working.
 
 ## Grouping and timing
 
@@ -94,7 +84,7 @@ The stack keeps the default first two and stretches the repeat for warnings to 1
 
 A receiver is a name plus zero or more integrations: `email_configs`, `slack_configs`, `webhook_configs` and others. The stack defines two receivers, `default` and `critical`, with every integration commented out. Alerts still reach Alertmanager and show in its UI, but no message leaves the server until you fill one in. The [alerting guide](/guide/alerting#add-a-receiver) has the email block.
 
-The commented Slack example in the file uses `webhook_configs` with a `hooks.slack.com` URL. That does not work as Slack delivery: `webhook_configs` posts Alertmanager's own JSON body, and a Slack incoming webhook expects Slack's message format. Use `slack_configs` with `api_url` instead. How to get that URL is covered in [How to get a Slack webhook URL](https://projects.halit.org/supadomain/blog/slack-webhook-url).
+The commented Slack example in the file uses `slack_configs` with `api_url`. Older copies used `webhook_configs` with a `hooks.slack.com` URL, which does not work as Slack delivery: `webhook_configs` posts Alertmanager's own JSON body, and a Slack incoming webhook expects Slack's message format. How to get that URL is covered in [How to get a Slack webhook URL](https://projects.halit.org/supadomain/blog/slack-webhook-url).
 
 ```yaml
 receivers:
@@ -113,21 +103,17 @@ An inhibit rule mutes target alerts while a source alert is firing. The referenc
 
 ```yaml
 inhibit_rules:
-  - source_match:
-      severity: 'critical'
-    target_match:
-      severity: 'warning'
-    equal: ['alertname', 'instance']
+  - source_matchers:
+      - severity="critical"
+      - resource=~".+"
+    target_matchers:
+      - severity="warning"
+    equal: ['instance', 'resource', 'mountpoint']
 ```
 
-It never fires. The rules come in warning and critical pairs with different names, such as `DiskSpaceLow` and `DiskSpaceCritical`, so no warning ever has the same `alertname` as a critical alert. With `equal: ['instance']` instead, any critical alert on a server would mute every warning on that server, which may hide more than you want. A narrower fix is to give each pair one name and two severities. In current syntax the rule reads:
+The rules come in warning and critical pairs with different names, such as `DiskSpaceLow` and `DiskSpaceCritical`, and each pair shares a `resource` label (`memory` or `disk`). While `DiskSpaceCritical` fires for `/` on a server, `DiskSpaceLow` for `/` on that server is muted. A label that is missing from both alerts counts as equal, which is why `mountpoint` can sit in `equal` for the memory pair too.
 
-```yaml
-inhibit_rules:
-  - source_matchers: ['severity="critical"']
-    target_matchers: ['severity="warning"']
-    equal: ['alertname', 'instance']
-```
+Earlier versions of the file used `equal: ['alertname', 'instance']`. No warning ever has the same `alertname` as a critical alert, so that rule never muted anything. `equal: ['instance']` alone would go too far: any critical alert on a server would mute every warning on it. The `resource=~".+"` matcher keeps critical alerts without a pair, such as `InstanceDown`, out of the rule.
 
 ## Silences
 

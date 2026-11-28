@@ -12,7 +12,7 @@ groups:
           description: "{{ $labels.instance }} has been unreachable for more than 1 minute."
 
       - alert: HighCpuUsage
-        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
         for: 5m
         labels:
           severity: warning
@@ -25,6 +25,7 @@ groups:
         for: 5m
         labels:
           severity: warning
+          resource: memory
         annotations:
           summary: "High memory usage on {{ $labels.instance }}"
           description: "Memory usage is {{ printf \"%.1f\" $value }}% on {{ $labels.instance }}."
@@ -34,6 +35,7 @@ groups:
         for: 2m
         labels:
           severity: critical
+          resource: memory
         annotations:
           summary: "Critical memory usage on {{ $labels.instance }}"
           description: "Memory usage is {{ printf \"%.1f\" $value }}% on {{ $labels.instance }}."
@@ -43,6 +45,7 @@ groups:
         for: 5m
         labels:
           severity: warning
+          resource: disk
         annotations:
           summary: "Low disk space on {{ $labels.instance }}"
           description: "Disk usage is {{ printf \"%.1f\" $value }}% on {{ $labels.instance }} ({{ $labels.mountpoint }})."
@@ -52,12 +55,13 @@ groups:
         for: 2m
         labels:
           severity: critical
+          resource: disk
         annotations:
           summary: "Critical disk space on {{ $labels.instance }}"
           description: "Disk usage is {{ printf \"%.1f\" $value }}% on {{ $labels.instance }} ({{ $labels.mountpoint }})."
 
       - alert: HighNetworkErrors
-        expr: irate(node_network_receive_errs_total[5m]) + irate(node_network_transmit_errs_total[5m]) > 10
+        expr: rate(node_network_receive_errs_total[5m]) + rate(node_network_transmit_errs_total[5m]) > 10
         for: 5m
         labels:
           severity: warning

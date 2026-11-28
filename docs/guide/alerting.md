@@ -80,8 +80,8 @@ route:
   receiver: 'default'
 
   routes:
-    - match:
-        severity: critical
+    - matchers:
+        - severity="critical"
       receiver: 'critical'
       repeat_interval: 1h
 ```
@@ -94,7 +94,19 @@ route:
 | `repeat_interval` | 12h, 1h for critical | How often a still-firing alert is sent again |
 | `resolve_timeout` | 5m | When an alert that stopped arriving counts as resolved |
 
-There is also one inhibit rule. A firing critical alert mutes a warning that has the same `alertname` and the same `instance`. The shipped warning and critical pairs use different alert names, for example `DiskSpaceLow` and `DiskSpaceCritical`, so as written both of them notify. If you want the critical alert to silence its warning, give the pair one name with two severities, or change `equal` to `['instance']`.
+There is also one inhibit rule. While a critical alert fires, it mutes the matching warning on the same server: `CriticalMemoryUsage` mutes `HighMemoryUsage`, and `DiskSpaceCritical` mutes `DiskSpaceLow` for the same mount point. The pairs have different alert names, so the rule matches on a shared `resource` label instead (`memory` or `disk`):
+
+```yaml
+inhibit_rules:
+  - source_matchers:
+      - severity="critical"
+      - resource=~".+"
+    target_matchers:
+      - severity="warning"
+    equal: ['instance', 'resource', 'mountpoint']
+```
+
+Only critical alerts that carry a `resource` label mute anything, so `InstanceDown` or a critical rule you add yourself does not hide unrelated warnings. Give your own warning and critical pair the same `resource` value to join in.
 
 ## Add a receiver
 
@@ -119,7 +131,7 @@ receivers:
         send_resolved: true
 ```
 
-The file also carries a commented `webhook_configs` block with a Slack URL. `webhook_configs` posts Alertmanager's own JSON format to any HTTP endpoint you run. A Slack incoming webhook expects Slack's message format, which is what Alertmanager's `slack_configs` integration sends:
+For Slack, uncomment the `slack_configs` block and paste your incoming webhook URL. Use `slack_configs`, not `webhook_configs`: a webhook receiver posts Alertmanager's own JSON format, while a Slack incoming webhook expects Slack's message format:
 
 ```yaml
 receivers:

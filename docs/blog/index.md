@@ -12,7 +12,7 @@ description: "Guides to PromQL, Alertmanager routing and silences, alert rule te
 
 ## [How Prometheus Alertmanager routes, groups and mutes alerts](/blog/prometheus-alertmanager-explained)
 
-Alertmanager explained with a real config: the routing tree, grouping, receivers, inhibition and silences, and the parts of the file that need fixing first.
+Alertmanager explained with a real config: the routing tree, grouping, receivers, inhibition and silences, and the parts of the file you fill in yourself.
 
 ## [Using $labels and $value in Prometheus alert annotations](/blog/prometheus-alert-rule-templates)
 
@@ -52,7 +52,7 @@ PromQL has no if function. How comparison filters, the bool modifier, and, or, u
 
 ## [Counting per second in PromQL: rate, irate and increase](/blog/promql-rate)
 
-How PromQL rate, irate and increase work on counters, how to pick the range, why the docs prefer rate for alerts, and where this stack still uses irate.
+How PromQL rate, irate and increase work on counters, how to pick the range, why the docs prefer rate for alerts, and why this stack's alerts use rate.
 
 ## [Grouping PromQL results with by and without](/blog/promql-group-by)
 
