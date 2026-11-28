@@ -13,7 +13,7 @@ Node Exporter answers "how is the server doing". cAdvisor answers "which contain
 
 ```yaml
 cadvisor:
-  image: gcr.io/cadvisor/cadvisor:v0.55.1
+  image: ghcr.io/google/cadvisor:v0.61.1
   ports:
     - "8080:8080"
   restart: unless-stopped

@@ -55,7 +55,7 @@ services:
       - --storage.path=/alertmanager
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.55.1
+    image: ghcr.io/google/cadvisor:v0.61.1
     ports:
       - "8080:8080"
     restart: unless-stopped

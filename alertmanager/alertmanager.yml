@@ -13,8 +13,8 @@ route:
   receiver: 'default'
 
   routes:
-    - match:
-        severity: critical
+    - matchers:
+        - severity="critical"
       receiver: 'critical'
       repeat_interval: 1h
 
@@ -24,8 +24,9 @@ receivers:
     #   - to: 'your-email@example.com'
     #     send_resolved: true
 
-    # webhook_configs:
-    #   - url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+    # slack_configs:
+    #   - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+    #     channel: '#alerts'
     #     send_resolved: true
 
   - name: 'critical'
@@ -34,8 +35,10 @@ receivers:
     #     send_resolved: true
 
 inhibit_rules:
-  - source_match:
-      severity: 'critical'
-    target_match:
-      severity: 'warning'
-    equal: ['alertname', 'instance']
+  # Warning and critical pairs have different alert names and share a resource label.
+  - source_matchers:
+      - severity="critical"
+      - resource=~".+"
+    target_matchers:
+      - severity="warning"
+    equal: ['instance', 'resource', 'mountpoint']

@@ -41,7 +41,7 @@ grafana/dashboards/node-exporter.json    second copy of the dashboard, not mount
 | `prometheus` | `prom/prometheus:v3.16.0` | 9090 | 9090 |
 | `alertmanager` | `prom/alertmanager:v0.35.0` | 9093 | 9093 |
 | `myserver_node_exporter` | `prom/node-exporter:v1.12.1` | 9100 | 9100 |
-| `cadvisor` | `gcr.io/cadvisor/cadvisor:v0.55.1` | 8080 | 8080 |
+| `cadvisor` | `ghcr.io/google/cadvisor:v0.61.1` | 8080 | 8080 |
 
 Every service has `restart: unless-stopped`. Grafana declares `depends_on: prometheus`, and Prometheus declares `depends_on: myserver_node_exporter`.
 

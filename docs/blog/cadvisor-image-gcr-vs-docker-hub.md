@@ -14,7 +14,7 @@ faq: [{"q": "What is the official cAdvisor Docker image?", "a": "The cAdvisor RE
 
 <p class="post-meta">By <a href="https://halit.org">Halit Sever</a> · <time datetime="2026-11-28">28 November 2026</time></p>
 
-<p class="lead">Search for a cAdvisor Docker image and you find three registries. Only one of them gets new releases today. This post lists what each registry holds, as checked against the registries themselves on 28 November 2026, and how to switch this stack's image.</p>
+<p class="lead">Search for a cAdvisor Docker image and you find three registries. Only one of them gets new releases today. This post lists what each registry holds, as checked against the registries themselves on 28 November 2026, and how this stack moved its image.</p>
 
 ## The three registries
 
@@ -28,29 +28,24 @@ The [cAdvisor README](https://github.com/google/cadvisor) says it in one comment
 
 ## What this stack pins
 
+The stack used to pin `gcr.io/cadvisor/cadvisor:v0.55.1`. That image exists and pulls fine, but it is the last tag on gcr.io, so Dependabot, which bumps the compose file, had nothing newer to offer from that registry. The compose file now uses ghcr.io, with the v-prefixed tag like the other images in the file:
+
 ```yaml
 cadvisor:
-  image: gcr.io/cadvisor/cadvisor:v0.55.1
+  image: ghcr.io/google/cadvisor:v0.61.1
   privileged: true
 ```
 
-That image exists and pulls fine. It is also the last tag on gcr.io, so Dependabot, which bumps the compose file, has nothing newer to offer from that registry. Moving to ghcr.io is a one-line change.
-
 ## Switch to ghcr.io
 
-```yaml
-cadvisor:
-  image: ghcr.io/google/cadvisor:0.61.1
-```
-
-Then pull and recreate only that service:
+If your copy still has the gcr.io line, change it the same way, then pull and recreate only that service:
 
 ```bash
 docker compose pull cadvisor
 docker compose up -d cadvisor
 ```
 
-Nothing else changes: the port (8080), the volumes and the Prometheus scrape job (`cadvisor:8080` every 10 seconds) stay the same. Check `http://localhost:9090/targets` afterwards; the `cadvisor` target should be up again within a scrape or two. Read the release notes between the two versions before you jump six minor versions on a server you care about.
+Nothing else changes: the port (8080), the volumes and the Prometheus scrape job (`cadvisor:8080` every 10 seconds) stay the same. Check `http://localhost:9090/targets` afterwards; the `cadvisor` target should be up again within a scrape or two. Read the release notes between the two versions before you jump six minor versions on a server you care about. One of them matters for old hosts: from v0.56.0, cAdvisor no longer supports Docker versions older than 25.0.
 
 ## When gcr.io or ghcr.io is blocked
 

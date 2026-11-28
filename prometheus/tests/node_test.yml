@@ -1,0 +1,144 @@
+# promtool test rules prometheus/tests/node_test.yml
+rule_files:
+  - ../rules/node.yml
+
+evaluation_interval: 30s
+
+tests:
+  - interval: 15s
+    input_series:
+      - series: 'up{job="node", instance="web"}'
+        values: '1 1 0 0 0 0 0 0 0 0'
+    alert_rule_test:
+      - eval_time: 1m
+        alertname: InstanceDown
+        exp_alerts: []
+      - eval_time: 2m
+        alertname: InstanceDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: node
+              instance: web
+            exp_annotations:
+              summary: "Instance web down"
+              description: "web has been unreachable for more than 1 minute."
+
+  # Idle half of the time, but every evaluation lands right after a busy 15s scrape,
+  # so irate saw 100% busy and fired. rate sees the 50% average.
+  - interval: 15s
+    input_series:
+      - series: 'node_cpu_seconds_total{cpu="0", mode="idle", instance="web"}'
+        values: '0 15 15 30 30 45 45 60 60 75 75 90 90 105 105 120 120 135 135 150 150 165 165 180 180 195 195 210 210 225 225 240 240 255 255 270 270 285 285 300 300'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HighCpuUsage
+        exp_alerts: []
+
+  - interval: 15s
+    input_series:
+      - series: 'node_cpu_seconds_total{cpu="0", mode="idle", instance="web"}'
+        values: '0+0.6x40'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HighCpuUsage
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              instance: web
+            exp_annotations:
+              summary: "High CPU usage on web"
+              description: "CPU usage is 96.0% on web for more than 5 minutes."
+
+  # 8 errors/s on average, delivered in bursts that irate read as 16/s.
+  - interval: 15s
+    input_series:
+      - series: 'node_network_receive_errs_total{device="eth0", instance="web"}'
+        values: '0 0 240 240 480 480 720 720 960 960 1200 1200 1440 1440 1680 1680 1920 1920 2160 2160 2400 2400 2640 2640 2880 2880 3120 3120 3360 3360 3600 3600 3840 3840 4080 4080 4320 4320 4560 4560 4800'
+      - series: 'node_network_transmit_errs_total{device="eth0", instance="web"}'
+        values: '0x40'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HighNetworkErrors
+        exp_alerts: []
+
+  - interval: 15s
+    input_series:
+      - series: 'node_network_receive_errs_total{device="eth0", instance="web"}'
+        values: '0+300x40'
+      - series: 'node_network_transmit_errs_total{device="eth0", instance="web"}'
+        values: '0x40'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HighNetworkErrors
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              instance: web
+              device: eth0
+            exp_annotations:
+              summary: "High network errors on web"
+              description: "Network error rate is 20 errors/s on web (eth0)."
+
+  # Both memory alerts fire with the same resource label, which the Alertmanager inhibit rule matches on.
+  - interval: 15s
+    input_series:
+      - series: 'node_memory_MemAvailable_bytes{instance="web"}'
+        values: '3x40'
+      - series: 'node_memory_MemTotal_bytes{instance="web"}'
+        values: '100x40'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HighMemoryUsage
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              resource: memory
+              instance: web
+            exp_annotations:
+              summary: "High memory usage on web"
+              description: "Memory usage is 97.0% on web."
+      - eval_time: 10m
+        alertname: CriticalMemoryUsage
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              resource: memory
+              instance: web
+            exp_annotations:
+              summary: "Critical memory usage on web"
+              description: "Memory usage is 97.0% on web."
+
+  - interval: 15s
+    input_series:
+      - series: 'node_filesystem_avail_bytes{mountpoint="/", fstype="ext4", device="sda1", instance="web"}'
+        values: '2x40'
+      - series: 'node_filesystem_size_bytes{mountpoint="/", fstype="ext4", device="sda1", instance="web"}'
+        values: '100x40'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: DiskSpaceLow
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              resource: disk
+              instance: web
+              mountpoint: /
+              fstype: ext4
+              device: sda1
+            exp_annotations:
+              summary: "Low disk space on web"
+              description: "Disk usage is 98.0% on web (/)."
+      - eval_time: 10m
+        alertname: DiskSpaceCritical
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              resource: disk
+              instance: web
+              mountpoint: /
+              fstype: ext4
+              device: sda1
+            exp_annotations:
+              summary: "Critical disk space on web"
+              description: "Disk usage is 98.0% on web (/)."

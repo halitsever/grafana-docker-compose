@@ -1,7 +1,7 @@
 ---
 title: "PromQL rate vs irate vs increase, With Examples"
 titleTemplate: false
-description: "How PromQL rate, irate and increase work on counters, how to pick the range, why the docs prefer rate for alerts, and where this stack still uses irate."
+description: "How PromQL rate, irate and increase work on counters, how to pick the range, why the docs prefer rate for alerts, and why this stack's alerts use rate."
 headline: "Counting per second in PromQL: rate, irate and increase"
 date: "2026-11-28"
 keyword: "promql rate"
@@ -14,7 +14,7 @@ faq: [{"q": "What is the difference between rate and irate in PromQL?", "a": "ra
 
 <p class="post-meta">By <a href="https://halit.org">Halit Sever</a> · <time datetime="2026-11-28">28 November 2026</time></p>
 
-<p class="lead">Most of what Node Exporter and cAdvisor export are counters: numbers that only go up, such as seconds of CPU time or bytes received. Graphing them raw shows a rising line. rate, irate and increase turn them into something you can read. This post explains the difference with queries from this stack, and points out one place where the stack does not follow the documentation's advice.</p>
+<p class="lead">Most of what Node Exporter and cAdvisor export are counters: numbers that only go up, such as seconds of CPU time or bytes received. Graphing them raw shows a rising line. rate, irate and increase turn them into something you can read. This post explains the difference with queries from this stack and shows why its alert rules use rate.</p>
 
 The outputs below come from running this repository's `prometheus.yml` and `prometheus/rules/node.yml` on Prometheus v3.16.0 with node-exporter v1.12.1 in Docker on 28 November 2026. cAdvisor was not started, so its target shows as down. Values change from machine to machine; the labels and the shape of each result are what to look at.
 
@@ -73,21 +73,17 @@ rate(sum by (instance) (node_network_receive_bytes_total)[5m:])  # wrong
 
 The functions reference gives the reason: aggregate first and `rate` can no longer see counter resets when a target restarts. The [group by post](/blog/promql-group-by) has more on the aggregation side.
 
-## Where this stack uses irate
+## rate in this stack's alerts
 
 The repository's `HighCpuUsage` rule in [prometheus/rules/node.yml](https://github.com/halitsever/grafana-docker-compose/blob/main/prometheus/rules/node.yml) is:
-
-```promql
-100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
-```
-
-with `for: 5m`, and `HighNetworkErrors` also uses `irate`. That is the case the documentation warns about: one quiet five-second interval resets the five-minute wait, so a CPU that is busy most of the time may never fire. If you depend on these alerts, switch them to `rate`:
 
 ```promql
 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
 ```
 
-The dashboard panels use `irate` too, which suits a live graph. The [cAdvisor metrics post](/blog/cadvisor-metrics) uses `rate` for container CPU for the same reason.
+with `for: 5m`, and `HighNetworkErrors` uses `rate` the same way. Earlier versions used `irate` in both, which is the case the documentation warns about: one quiet scrape interval resets the five-minute wait, so a CPU that is busy most of the time may never fire, and a bursty error counter can look worse than it is. The repository's [promtool unit tests](https://github.com/halitsever/grafana-docker-compose/blob/main/prometheus/tests/node_test.yml) feed both rules counters that move in bursts and check that the five-minute average decides. The [promtool post](/blog/promtool) shows how to run them.
+
+The dashboard panels still use `irate`, which suits a live graph. The [cAdvisor metrics post](/blog/cadvisor-metrics) uses `rate` for container CPU, since it reads the trend.
 
 ## FAQ
 

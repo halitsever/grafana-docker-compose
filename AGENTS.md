@@ -9,14 +9,17 @@ CI (`.github/workflows/ci.yml`) runs these on push and PR to `main`. Run them lo
 ```bash
 docker compose config -q
 docker run --rm -v "$PWD/prometheus.yml:/etc/prometheus/prometheus.yml:ro" -v "$PWD/prometheus/rules:/etc/prometheus/rules:ro" --entrypoint promtool prom/prometheus:v3.16.0 check config /etc/prometheus/prometheus.yml
+docker run --rm -v "$PWD/prometheus:/p:ro" --entrypoint promtool prom/prometheus:v3.16.0 test rules /p/tests/node_test.yml
 docker run --rm -v "$PWD/alertmanager:/cfg:ro" --entrypoint amtool prom/alertmanager:v0.35.0 check-config /cfg/alertmanager.yml
 ```
 
+- `prometheus/tests/node_test.yml` holds promtool unit tests for the alert rules. It lives outside `prometheus/rules/` because Prometheus loads every `.yml` there as a rule file.
 - `promtool check config` also checks every file in `prometheus/rules/`, so new rule files need no extra step.
 - `docker compose config` warns that `version` is obsolete. The warning does not fail CI.
 
 ## Gotchas
 
+- The Alertmanager inhibit rule pairs warning and critical alerts through their shared `resource` label. A new warning and critical pair needs the same `resource` value on both rules.
 - Image tags live in two places: `docker-compose.yml` and the `promtool` / `amtool` images in `ci.yml`. Dependabot bumps only the compose file, so update the CI tags in the same PR.
 - The dashboard JSON exists twice: `grafana/dashboards/node-exporter.json` and `grafana/provisioning/dashboards/json/node-exporter.json`. Only the provisioning copy is mounted. Keep both identical.
 - Dashboard panels use the `${datasource}` template variable, not a fixed data source uid.
