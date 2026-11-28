@@ -70,7 +70,7 @@ const guides = [
   <div class="wall">
     <div class="wall-grid">
       <section class="panel intro">
-        <h1>Grafana Docker Compose stack with Prometheus</h1>
+        <h1>One Grafana Docker Compose file for Prometheus, alerts and dashboards</h1>
         <p class="lede">
           One compose file starts Grafana, Prometheus, Alertmanager, Node Exporter and cAdvisor. The data source, a Node Exporter dashboard and
           eight alert rules are already wired, so the first page you open has graphs on it.

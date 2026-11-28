@@ -1,7 +1,7 @@
 ---
 title: "Prometheus, Alertmanager and Grafana Guides"
 titleTemplate: false
-description: "Guides to Alertmanager routing and silences, Prometheus alert templates, Grafana dashboard export and cAdvisor metrics, built on one Docker Compose stack."
+description: "Guides to PromQL, Alertmanager routing and silences, alert rule templates and tests, Grafana dashboard export and cAdvisor metrics, on one Docker Compose stack."
 ---
 
 ::: v-pre
@@ -41,5 +41,29 @@ Where the cAdvisor container image lives: gcr.io up to v0.55.1, ghcr.io for v0.5
 ## [The cAdvisor container metrics worth a Grafana panel](/blog/cadvisor-metrics)
 
 The cAdvisor metrics worth graphing for Docker containers: CPU, working set memory, throttling, network, filesystem and restarts, with PromQL for each one.
+
+## [The PromQL queries you need for one server, on one page](/blog/promql-cheat-sheet)
+
+A PromQL cheat sheet built on a real Node Exporter stack: selectors, matchers, range vectors, rate, aggregation, comparisons and the functions alerts use.
+
+## [Writing if-then logic in PromQL with filters and bool](/blog/promql-if-function)
+
+PromQL has no if function. How comparison filters, the bool modifier, and, or, unless and vector(0) express conditions in queries, panels and alert rules.
+
+## [Counting per second in PromQL: rate, irate and increase](/blog/promql-rate)
+
+How PromQL rate, irate and increase work on counters, how to pick the range, why the docs prefer rate for alerts, and where this stack still uses irate.
+
+## [Grouping PromQL results with by and without](/blog/promql-group-by)
+
+Group by in PromQL: sum by, avg by, count by and without, where the clause can go, how labels are dropped, and examples from a Node Exporter stack.
+
+## [Rewriting labels at query time with label_replace](/blog/promql-label-replace)
+
+How PromQL label_replace works: argument order, anchored regex, capture groups, what happens without a match, label_join, and when relabeling is better.
+
+## [Catching broken Prometheus rules before they ship with promtool](/blog/promtool)
+
+How to use promtool from the Prometheus Docker image: check config and rules, unit test an alert with test rules, read a failure, and run it all in CI.
 
 :::
